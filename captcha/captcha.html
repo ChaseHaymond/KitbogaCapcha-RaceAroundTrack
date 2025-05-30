@@ -21,7 +21,7 @@
     }
 
     /* Your style here... */
-        #target-zone {
+    #start-zone {
       width: 50px;
       height: 50px;
       position: absolute;
@@ -30,14 +30,25 @@
       background: rgba(0, 255, 0, 0.3); /* Semi-transparent for testing */
       /* Set `opacity: 0` to make it invisible if needed */
     }
+
+    #end-zone {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      background: rgba(255, 0, 0, 0.5); /* red */
+      display: none;
+    }
   </style>
 </head>
 
 <body>
   <div id="captcha-container">
-    Move your mouse into the target zone to complete the CAPTCHA.
+    Move your mouse into the start zone to complete the CAPTCHA.
 
-    <div id="target-zone"></div>
+    <div id="start-zone"></div>
+    <div id="end-zone"></div>
   </div>
 
   <script type="text/javascript">
@@ -46,11 +57,21 @@
         window.top.postMessage("success", '*');
       }
 
-      const target = document.getElementById('target-zone');
+      function startRace() {
 
-      target.addEventListener('mouseenter', () => {
+      }
+
+      const startZone = document.getElementById('start-zone');
+      const endZone = document.getElementById('end-zone');
+
+      startZone.addEventListener('mouseenter', () => {
+        endZone.style.display = 'block'; // Reveal red zone
+      });
+
+      endZone.addEventListener('mouseenter', () => {
         captchaSuccess();
       });
+      
     })(window, document);
   </script>
 </body>
