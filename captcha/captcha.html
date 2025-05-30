@@ -102,21 +102,51 @@
       drawing = true;
       // Start a new path from lastX/lastY
       ctx.beginPath();
+      ctx.moveTo(x, y);
     }
 
     function stopDrawing() {
       drawing = false;
     }
 
+    function handleTouchMove(e) {
+      e.preventDefault(); // prevent scrolling
+
+      if (!drawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = "blue";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      lastX = x;
+      lastY = y;
+    }
+
     startZone.addEventListener('mouseenter', (e) => {
       endZone.style.display = 'block';
-
       const rect = canvas.getBoundingClientRect();
-      lastX = e.clientX - rect.left;
-      lastY = e.clientY - rect.top;
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      lastX = x;
+      lastY = y;
+      startDrawing(x, y);
+    });
 
-      startDrawing();
-      ctx.moveTo(lastX, lastY);
+    startZone.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      endZone.style.display = 'block';
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      const x = touch.clientX - rect.left;
+      const y = touch.clientY - rect.top;
+      lastX = x;
+      lastY = y;
+      startDrawing(x, y);
     });
 
     endZone.addEventListener('mouseenter', () => {
@@ -125,6 +155,8 @@
 
     document.getElementById('captcha-container').addEventListener('mousemove', drawPath);
     document.getElementById('captcha-container').addEventListener('mouseleave', stopDrawing);
+    document.getElementById('captcha-container').addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.getElementById('captcha-container').addEventListener('touchend', stopDrawing);
   })(window, document);
 </script>
 
