@@ -21,24 +21,30 @@
     }
 
     /* Your style here... */
-    #start-zone {
+    #start-zone, #end-zone {
       width: 50px;
       height: 50px;
       position: absolute;
+    }
+
+    #start-zone {
       top: 220px;
       left: 320px;
-      background: rgba(0, 255, 0, 0.3); /* Semi-transparent for testing */
-      /* Set `opacity: 0` to make it invisible if needed */
+      background: rgba(0, 255, 0, 0.3); /* green */
     }
 
     #end-zone {
-      width: 50px;
-      height: 50px;
-      position: absolute;
       top: 30px;
       left: 30px;
       background: rgba(255, 0, 0, 0.5); /* red */
       display: none;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none; /* allows mouse events to pass through */
     }
   </style>
 </head>
@@ -46,6 +52,7 @@
 <body>
   <div id="captcha-container">
     Move your mouse into the start zone to complete the CAPTCHA.
+    <canvas id="path-canvas" width="390" height="300"></canvas>
 
     <div id="start-zone"></div>
     <div id="end-zone"></div>
@@ -53,25 +60,56 @@
 
   <script type="text/javascript">
     (function(window, document){
-      function captchaSuccess() {
-        window.top.postMessage("success", '*');
-      }
-
-      function startRace() {
-
-      }
-
       const startZone = document.getElementById('start-zone');
       const endZone = document.getElementById('end-zone');
+      const canvas = document.getElementById('path-canvas');
+      const ctx = canvas.getContext('2d');
 
-      startZone.addEventListener('mouseenter', () => {
-        endZone.style.display = 'block'; // Reveal red zone
+      let drawing = false;
+      let lastX = 0;
+      let lastY = 0;
+
+      function captchaSuccess() {
+        window.top.postMessage("success", '*');
+        stopDrawing() 
+      }
+
+      function startDrawing(e) {
+        drawing = true;
+      }
+
+      function drawPath(e) {
+        if (!drawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = "blue";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        lastX = x;
+        lastY = y;
+      }
+
+      function stopDrawing() {
+        drawing = false;
+      }
+
+      startZone.addEventListener('mouseenter', (e) => {
+        endZone.style.display = 'block';
+        startDrawing(e);
       });
 
       endZone.addEventListener('mouseenter', () => {
         captchaSuccess();
       });
-      
+
+      // Track all mouse movement inside the container
+      document.getElementById('captcha-container').addEventListener('mousemove', drawPath);
+      document.getElementById('captcha-container').addEventListener('mouseleave', stopDrawing);
+
     })(window, document);
   </script>
 </body>
