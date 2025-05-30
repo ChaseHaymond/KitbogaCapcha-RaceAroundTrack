@@ -75,7 +75,7 @@
       }
 
       function startDrawing(e) {
-        drawing = true;
+        startDrawing()
       }
 
       function drawPath(e) {
@@ -91,6 +91,10 @@
 
         lastX = x;
         lastY = y;
+      }
+
+      function startDrawing() {
+        drawing = true;
       }
 
       function stopDrawing() {
