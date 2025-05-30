@@ -58,63 +58,75 @@
     <div id="end-zone"></div>
   </div>
 
-  <script type="text/javascript">
-    (function(window, document){
-      const startZone = document.getElementById('start-zone');
-      const endZone = document.getElementById('end-zone');
-      const canvas = document.getElementById('path-canvas');
-      const ctx = canvas.getContext('2d');
 
-      let drawing = false;
-      let lastX = 0;
-      let lastY = 0;
+<script type="text/javascript">
+  (function(window, document){
+    const startZone = document.getElementById('start-zone');
+    const endZone = document.getElementById('end-zone');
+    const canvas = document.getElementById('path-canvas');
+    const ctx = canvas.getContext('2d');
 
-      function captchaSuccess() {
-        window.top.postMessage("success", '*');
-        stopDrawing() 
-      }
+    let drawing = false;
+    let lastX = 0;
+    let lastY = 0;
 
-      function startDrawing(e) {
-        startDrawing()
-      }
+    // Load and draw background image
+    const bgImage = new Image();
+    bgImage.src = 'images/track.png';
 
-      function drawPath(e) {
-        if (!drawing) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+    bgImage.onload = function() {
+      ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    };
 
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = "blue";
-        ctx.lineWidth = 2;
-        ctx.stroke();
+    function captchaSuccess() {
+      window.top.postMessage("success", '*');
+      stopDrawing();
+    }
 
-        lastX = x;
-        lastY = y;
-      }
+    function drawPath(e) {
+      if (!drawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
 
-      function startDrawing() {
-        drawing = true;
-      }
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = "blue";
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
-      function stopDrawing() {
-        drawing = false;
-      }
+      lastX = x;
+      lastY = y;
+    }
 
-      startZone.addEventListener('mouseenter', (e) => {
-        endZone.style.display = 'block';
-        startDrawing(e);
-      });
+    function startDrawing() {
+      drawing = true;
+      // Start a new path from lastX/lastY
+      ctx.beginPath();
+    }
 
-      endZone.addEventListener('mouseenter', () => {
-        captchaSuccess();
-      });
+    function stopDrawing() {
+      drawing = false;
+    }
 
-      // Track all mouse movement inside the container
-      document.getElementById('captcha-container').addEventListener('mousemove', drawPath);
-      document.getElementById('captcha-container').addEventListener('mouseleave', stopDrawing);
+    startZone.addEventListener('mouseenter', (e) => {
+      endZone.style.display = 'block';
 
-    })(window, document);
-  </script>
+      const rect = canvas.getBoundingClientRect();
+      lastX = e.clientX - rect.left;
+      lastY = e.clientY - rect.top;
+
+      startDrawing();
+      ctx.moveTo(lastX, lastY);
+    });
+
+    endZone.addEventListener('mouseenter', () => {
+      captchaSuccess();
+    });
+
+    document.getElementById('captcha-container').addEventListener('mousemove', drawPath);
+    document.getElementById('captcha-container').addEventListener('mouseleave', stopDrawing);
+  })(window, document);
+</script>
+
 </body>
 </html>
