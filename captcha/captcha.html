@@ -21,6 +21,66 @@
     }
 
     /* Your style here... */
+
+    /* Out of Bounds */
+    #inner-out-of-bounds {
+      position: absolute;
+      top: 114px;
+      left: 48px;
+      width: 292px;
+      height: 125px;
+      z-index: 10;
+      border-radius: 60px;
+      background: rgba(255, 0, 0, 0.5);
+    }
+
+    #upper-out-of-bounds, #lower-out-of-bounds  {
+      position: absolute;
+      width: 390px;
+      height: 15px;
+      background: rgba(255, 0, 0, 0.5);
+    }
+
+    #upper-out-of-bounds {
+      top: 57px;
+      left: 0px;
+    }
+
+    #lower-out-of-bounds {
+      top: 279px;
+      left: 0px;
+    }
+
+    #topleft-corner-out-of-bounds, #topright-corner-out-of-bounds, #botleft-corner-out-of-bounds, #botright-corner-out-of-bounds {
+      position: absolute; 
+      width: 80px;
+      height: 80px;
+      transform: rotate(45deg);
+      transform-origin: top left;
+      background: rgba(255, 0, 0, 0.5);
+    }
+
+    #topleft-corner-out-of-bounds {
+      top: 25px;
+      left: 02px;
+    }
+
+    #topright-corner-out-of-bounds {
+      top: 25px;
+      left: 390px;
+    }
+
+    #botleft-corner-out-of-bounds {
+      top: 210px;
+      left: 02px;
+    }
+
+    #botright-corner-out-of-bounds {
+      top: 210px;
+      left: 390px;
+    }
+
+    /* Checkpoints */
     #start-zone, #end-zone, #check-point {
       width: 50px;
       height: 40px;
@@ -47,22 +107,15 @@
       display: none;
     }
 
-    #inner-out-of-bounds {
-      position: absolute; /* 👈 this is critical */
-      top: 114px;
-      left: 48px;
-      width: 292px;
-      height: 125px;
-      z-index: 10;
-      border-radius: 60px;
-      background: rgba(255, 0, 0, 0.5);
+    body {
+      overflow: hidden; /* Gets rid of scrolling when my divs go off screen */
     }
 
     canvas {
       position: absolute;
       top: 0;
       left: 0;
-      pointer-events: none; /* allows mouse events to pass through */
+      pointer-events: none;
     }
   </style>
 </head>
@@ -72,10 +125,18 @@
     Move your mouse into the start zone to complete the CAPTCHA.
     <canvas id="path-canvas" width="390" height="300"></canvas>
 
+    <div id="inner-out-of-bounds"></div>
+    <div id="upper-out-of-bounds"></div>
+    <div id="lower-out-of-bounds"></div>
+    <div id="topleft-corner-out-of-bounds"></div>
+    <div id="topright-corner-out-of-bounds"></div>
+    <div id="botleft-corner-out-of-bounds"></div>
+    <div id="botright-corner-out-of-bounds"></div>
+
     <div id="start-zone"></div>
     <div id="end-zone"></div>
     <div id="check-point"></div>
-    <div id="inner-out-of-bounds"></div>
+
   </div>
 
 
