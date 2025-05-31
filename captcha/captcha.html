@@ -125,13 +125,13 @@
     Move your mouse into the start zone to complete the CAPTCHA.
     <canvas id="path-canvas" width="390" height="300"></canvas>
 
-    <div id="inner-out-of-bounds"></div>
-    <div id="upper-out-of-bounds"></div>
-    <div id="lower-out-of-bounds"></div>
-    <div id="topleft-corner-out-of-bounds"></div>
-    <div id="topright-corner-out-of-bounds"></div>
-    <div id="botleft-corner-out-of-bounds"></div>
-    <div id="botright-corner-out-of-bounds"></div>
+    <div class="out-of-bounds" id="inner-out-of-bounds"></div>
+    <div class="out-of-bounds" id="upper-out-of-bounds"></div>
+    <div class="out-of-bounds" id="lower-out-of-bounds"></div>
+    <div class="out-of-bounds" id="topleft-corner-out-of-bounds"></div>
+    <div class="out-of-bounds" id="topright-corner-out-of-bounds"></div>
+    <div class="out-of-bounds" id="botleft-corner-out-of-bounds"></div>
+    <div class="out-of-bounds" id="botright-corner-out-of-bounds"></div>
 
     <div id="start-zone"></div>
     <div id="end-zone"></div>
@@ -146,6 +146,7 @@
     const endZone = document.getElementById('end-zone');
     const checkPoint = document.getElementById('check-point');
     const canvas = document.getElementById('path-canvas');
+    const outOfBoundsElements = document.querySelectorAll('.out-of-bounds');
     const ctx = canvas.getContext('2d');
 
     let drawing = false;
@@ -248,6 +249,13 @@
 
     checkPoint.addEventListener('mouseenter', () => {
       captchaSuccess();
+    });
+
+    outOfBoundsElements.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        stopDrawing(); // Optional: maybe reset or disqualify
+        alert("You went out of bounds!");
+      });
     });
 
     document.getElementById('captcha-container').addEventListener('mousemove', drawPath);
