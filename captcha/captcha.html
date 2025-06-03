@@ -153,6 +153,8 @@
     let lastX = 0;
     let lastY = 0;
 
+    let raceStarted = false;
+
     // Load and draw background image
     const bgImage = new Image();
     bgImage.src = 'images/track.png';
@@ -164,6 +166,13 @@
     function captchaSuccess() {
       window.top.postMessage("success", '*');
       stopDrawing();
+    }
+
+    function outOfBounds() {
+      if (raceStarted) {
+        stopDrawing(); // Optional: maybe reset or disqualify
+        alert("You went out of bounds!");
+      }
     }
 
     function drawPath(e) {
@@ -182,6 +191,7 @@
     }
 
     function startDrawing() {
+      raceStarted = true;
       drawing = true;
       // Start a new path from lastX/lastY
       ctx.beginPath();
@@ -189,6 +199,10 @@
     }
 
     function stopDrawing() {
+      endZone.style.display = 'none';
+      checkPoint.style.display = "none";
+
+      raceStarted = false;
       drawing = false;
     }
 
@@ -208,6 +222,18 @@
 
       lastX = x;
       lastY = y;
+
+      // Check if inside any out-of-bounds element
+      for (const el of outOfBoundsElements) {
+        const b = el.getBoundingClientRect();
+        const withinX = touch.clientX >= b.left && touch.clientX <= b.right;
+        const withinY = touch.clientY >= b.top && touch.clientY <= b.bottom;
+
+        if (withinX && withinY) {
+          outOfBounds();
+          return; // Exit early — no further checks needed
+        }
+      }
 
       // Check if inside end zone
       const endRect = endZone.getBoundingClientRect();
@@ -253,8 +279,7 @@
 
     outOfBoundsElements.forEach(el => {
       el.addEventListener('mouseenter', () => {
-        stopDrawing(); // Optional: maybe reset or disqualify
-        alert("You went out of bounds!");
+        outOfBounds();
       });
     });
 
