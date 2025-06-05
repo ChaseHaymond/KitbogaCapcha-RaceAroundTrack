@@ -166,6 +166,17 @@
       z-index: 1000; /* Ensure it goes above the canvas */
     }
 
+    #timer {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 12px;
+      font-weight: bold;
+      color: black;
+      z-index: 1001;
+      font-family: monospace;
+    }
+
     @keyframes flash {
       0% { opacity: 1; }
       30% { opacity: 0.0; }
@@ -195,6 +206,7 @@
 
     <div id="header-text">Task: Run the 400 in under 4 seconds</div>
     <div id="status-text">Line up at the starting line!</div>
+    <div id="timer">00.000</div>
 
     <div id="start-zone" class="flash"></div>
     <div id="end-zone"></div>
@@ -220,6 +232,36 @@
 
 
 <script type="text/javascript">
+
+  let secondsNeededToWin = 4;
+
+  let timerInterval;
+  let startTime;
+
+  function startTimer() {
+    startTime = performance.now();
+
+    timerInterval = setInterval(() => {
+      const elapsed = performance.now() - startTime;
+      const seconds = Math.floor(elapsed / 1000);
+      const milliseconds = Math.floor(elapsed % 1000);
+      const formatted = `${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+      document.getElementById('timer').textContent = formatted;
+    }, 50);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  function isTimeUnderRequiredTime() {
+    if (!startTime) return false; // race has started yet
+
+    const now = performance.now();
+    const elapsed = now - startTime;
+    return elapsed < (secondsNeededToWin * 1000);
+  }
+
   (function(window, document){
     const startZone = document.getElementById('start-zone');
     const endZone = document.getElementById('end-zone');
@@ -248,6 +290,11 @@
 
     function captchaSuccess() {
       if (nextCheckpointNum > lastCheckpoint) {
+        if (!isTimeUnderRequiredTime()) {
+          stopDrawing(); // Optional: maybe reset or disqualify
+          alert("Too slow!");
+        }
+
         window.top.postMessage("success", '*');
         stopDrawing();
       }
@@ -289,6 +336,9 @@
     }
 
     function startDrawing() {
+      if (raceStarted == false) {
+        startTimer();
+      }
       raceStarted = true;
       drawing = true;
       // Start a new path from lastX/lastY
@@ -299,6 +349,8 @@
     }
 
     function stopDrawing() {
+      stopTimer();
+      document.getElementById('timer').textContent = '00.000'; // reset to zero if needed
       endZone.style.display = 'none';
 
       for (const el of checkPoints) {
