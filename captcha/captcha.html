@@ -138,6 +138,34 @@
       left: 214px;
     }
 
+    #header-text {
+      position: absolute;
+      top: 2px; /* or try 0 or tweak based on placement */
+      left: 5px;
+      width: 100%;
+      text-align: left;
+      font-size: 12px;
+      font-weight: bold;
+      padding-left: 2px 0;
+      color: black;
+      /* background-color: white; */
+      z-index: 1000; /* Ensure it goes above the canvas */
+    }
+
+    #status-text {
+      position: absolute;
+      top: 25px; /* or try 0 or tweak based on placement */
+      left: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 10px 0;
+      color: black;
+      /* background-color: white; */
+      z-index: 1000; /* Ensure it goes above the canvas */
+    }
+
     body {
       overflow: hidden; /* Gets rid of scrolling when my divs go off screen */
     }
@@ -153,8 +181,10 @@
 
 <body>
   <div id="captcha-container">
-    Move your mouse into the start zone to complete the CAPTCHA.
     <canvas id="path-canvas" width="390" height="300"></canvas>
+
+    <div id="header-text">Task: Run the 400 in under 4 seconds</div>
+    <div id="status-text">Line up at the starting line!</div>
 
     <div id="start-zone"></div>
     <div id="end-zone"></div>
@@ -196,6 +226,8 @@
     let raceStarted = false;
     let nextCheckpointNum = 1;
 
+    let displayText = "Line up at the starting line!"
+
     // Load and draw background image
     const bgImage = new Image();
     bgImage.src = 'images/track.png';
@@ -224,6 +256,8 @@
       let nextPoint = "check-point-" + nextCheckpointNum
 
       if (raceStarted && (nextPoint == pointHit)) {
+        displayText = "Checkpoint 1 cleared!";
+        document.getElementById('status-text').textContent = displayText;
         //alert("HIT");
         nextCheckpointNum = nextCheckpointNum + 1;
       }
