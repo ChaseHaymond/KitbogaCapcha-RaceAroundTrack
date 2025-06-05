@@ -166,6 +166,16 @@
       z-index: 1000; /* Ensure it goes above the canvas */
     }
 
+    @keyframes flash {
+      0% { opacity: 1; }
+      30% { opacity: 0.0; }
+      100% { opacity: 1; }
+    }
+
+    .flash {
+      animation: flash 1s infinite;
+    }
+
     body {
       overflow: hidden; /* Gets rid of scrolling when my divs go off screen */
     }
@@ -186,7 +196,7 @@
     <div id="header-text">Task: Run the 400 in under 4 seconds</div>
     <div id="status-text">Line up at the starting line!</div>
 
-    <div id="start-zone"></div>
+    <div id="start-zone" class="flash"></div>
     <div id="end-zone"></div>
 
     <div class="out-of-bounds" id="inner-out-of-bounds"></div>
@@ -283,7 +293,9 @@
       drawing = true;
       // Start a new path from lastX/lastY
       ctx.beginPath();
-      ctx.moveTo(x, y);
+      ctx.moveTo(lastX, lastY);
+
+      // document.getElementById('start-zone').classList.remove('flash');
     }
 
     function stopDrawing() {
@@ -295,6 +307,8 @@
 
       raceStarted = false;
       drawing = false;
+
+      // document.getElementById('start-zone').classList.add('flash');
     }
 
     function handleTouchMove(e) {
