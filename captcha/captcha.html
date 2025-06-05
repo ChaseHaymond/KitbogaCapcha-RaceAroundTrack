@@ -81,7 +81,7 @@
     }
 
     /* Checkpoints */
-    #start-zone, #end-zone, #check-point {
+    #start-zone, #end-zone {
       width: 50px;
       height: 40px;
       position: absolute;
@@ -94,17 +94,48 @@
     }
 
     #end-zone {
-      top: 200px;
-      left: 200px;
+      top: 73px;
+      left: 66px;
       background: rgba(255, 0, 0, 0.5); /* red */
       display: none;
     }
 
-    #check-point {
+    .check-point {
+      width: 50px;
+      height: 40px;
+      position: absolute;
+      background: rgba(255, 166, 0, 0.5);
+       display: block; /* none; */
+    }
+
+    #check-point-1 {
+      top: 100px;
+      left: 30px;
+    }
+
+    #check-point-2 {
+      top: 220px;
+      left: 30px;
+    }
+
+    #check-point-3 {
+      top: 238px;
+      left: 150px;
+    }
+
+    #check-point-4 {
+      top: 220px;
+      left: 300px;
+    }
+
+    #check-point-5 {
+      top: 100px;
+      left: 320px;
+    }
+
+    #check-point-6 {
       top: 73px;
       left: 214px;
-      background: rgba(255, 166, 0, 0.5);
-      display: none;
     }
 
     body {
@@ -125,6 +156,9 @@
     Move your mouse into the start zone to complete the CAPTCHA.
     <canvas id="path-canvas" width="390" height="300"></canvas>
 
+    <div id="start-zone"></div>
+    <div id="end-zone"></div>
+
     <div class="out-of-bounds" id="inner-out-of-bounds"></div>
     <div class="out-of-bounds" id="upper-out-of-bounds"></div>
     <div class="out-of-bounds" id="lower-out-of-bounds"></div>
@@ -133,9 +167,14 @@
     <div class="out-of-bounds" id="botleft-corner-out-of-bounds"></div>
     <div class="out-of-bounds" id="botright-corner-out-of-bounds"></div>
 
-    <div id="start-zone"></div>
-    <div id="end-zone"></div>
-    <div id="check-point"></div>
+
+    <div class="check-point" id="check-point-1"></div>
+    <div class="check-point" id="check-point-2"></div>
+    <div class="check-point" id="check-point-3"></div>
+    <div class="check-point" id="check-point-4"></div>
+    <div class="check-point" id="check-point-5"></div>
+    <div class="check-point" id="check-point-6"></div>
+    <!-- <div class="check-point" id="check-point-2"></div> -->
 
   </div>
 
@@ -144,7 +183,7 @@
   (function(window, document){
     const startZone = document.getElementById('start-zone');
     const endZone = document.getElementById('end-zone');
-    const checkPoint = document.getElementById('check-point');
+    const checkPoints = document.querySelectorAll('.check-point');
     const canvas = document.getElementById('path-canvas');
     const outOfBoundsElements = document.querySelectorAll('.out-of-bounds');
     const ctx = canvas.getContext('2d');
@@ -153,7 +192,9 @@
     let lastX = 0;
     let lastY = 0;
 
+    let lastCheckpoint = 6;
     let raceStarted = false;
+    let nextCheckpointNum = 1;
 
     // Load and draw background image
     const bgImage = new Image();
@@ -164,14 +205,27 @@
     };
 
     function captchaSuccess() {
-      window.top.postMessage("success", '*');
-      stopDrawing();
+      if (nextCheckpointNum > lastCheckpoint) {
+        window.top.postMessage("success", '*');
+        stopDrawing();
+      }
     }
 
     function outOfBounds() {
       if (raceStarted) {
         stopDrawing(); // Optional: maybe reset or disqualify
         alert("You went out of bounds!");
+      }
+    }
+
+    function checkPointHit(pointHit) {
+      // alert(pointHit);
+      // let num = 1;
+      let nextPoint = "check-point-" + nextCheckpointNum
+
+      if (raceStarted && (nextPoint == pointHit)) {
+        //alert("HIT");
+        nextCheckpointNum = nextCheckpointNum + 1;
       }
     }
 
@@ -200,7 +254,10 @@
 
     function stopDrawing() {
       endZone.style.display = 'none';
-      checkPoint.style.display = "none";
+
+      for (const el of checkPoints) {
+        el.style.display = "none";
+      }
 
       raceStarted = false;
       drawing = false;
@@ -247,7 +304,11 @@
 
     startZone.addEventListener('mouseenter', (e) => {
       endZone.style.display = 'block';
-      checkPoint.style.display = "block";
+
+      for (const el of checkPoints) {
+        el.style.display = "block";
+      }
+
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -259,7 +320,9 @@
     startZone.addEventListener('touchstart', (e) => {
       e.preventDefault();
       endZone.style.display = 'block';
-      checkPoint.style.display = "block";
+      for (const el of checkPoints) {
+        el.style.display = "block";
+      }
       const rect = canvas.getBoundingClientRect();
       const touch = e.touches[0];
       const x = touch.clientX - rect.left;
@@ -273,8 +336,10 @@
       captchaSuccess();
     });
 
-    checkPoint.addEventListener('mouseenter', () => {
-      captchaSuccess();
+    checkPoints.forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        checkPointHit(el.id);
+      });
     });
 
     outOfBoundsElements.forEach(el => {
