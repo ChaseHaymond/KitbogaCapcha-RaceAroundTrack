@@ -31,14 +31,14 @@
       height: 125px;
       z-index: 10;
       border-radius: 60px;
-      background: rgba(255, 0, 0, 0.5);
+      background: rgba(255, 0, 0, 0.0);
     }
 
     #upper-out-of-bounds, #lower-out-of-bounds  {
       position: absolute;
       width: 390px;
       height: 15px;
-      background: rgba(255, 0, 0, 0.5);
+      background: rgba(255, 0, 0, 0.0);
     }
 
     #upper-out-of-bounds {
@@ -57,7 +57,7 @@
       height: 80px;
       transform: rotate(45deg);
       transform-origin: top left;
-      background: rgba(255, 0, 0, 0.5);
+      background: rgba(255, 0, 0, 0.0);
     }
 
     #topleft-corner-out-of-bounds {
@@ -96,7 +96,7 @@
     #end-zone {
       top: 73px;
       left: 66px;
-      background: rgba(255, 0, 0, 0.5); /* red */
+      background: rgba(255, 0, 0, 0.0); /* red */
       display: none;
     }
 
@@ -104,7 +104,7 @@
       width: 50px;
       height: 40px;
       position: absolute;
-      background: rgba(255, 166, 0, 0.5);
+      background: rgba(255, 166, 0, 0.0);
        display: block; /* none; */
     }
 
@@ -284,6 +284,34 @@
     const bgImage = new Image();
     bgImage.src = 'images/track.png';
 
+    function beginRaceSequence(x, y) {
+      // Hide start zone and show checkpoints
+      startZone.style.display = 'none';
+      endZone.style.display = 'block';
+      for (const el of checkPoints) {
+        el.style.display = "block";
+      }
+
+      // Show "On your marks"
+      displayText = "On your marks";
+      document.getElementById('status-text').textContent = displayText;
+
+      setTimeout(() => {
+        displayText = "Get set";
+        document.getElementById('status-text').textContent = displayText;
+
+        setTimeout(() => {
+          displayText = "GO!";
+          document.getElementById('status-text').textContent = displayText;
+
+          // Now start the race
+          lastX = x;
+          lastY = y;
+          startDrawing(x, y);
+        }, 1000); // After another 1s
+      }, 1000); // First delay
+    }
+
     bgImage.onload = function() {
       ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     };
@@ -291,7 +319,8 @@
     function captchaSuccess() {
       if (nextCheckpointNum > lastCheckpoint) {
         if (!isTimeUnderRequiredTime()) {
-          stopDrawing(); // Optional: maybe reset or disqualify
+          startZone.style.display = 'block';
+          stopDrawing();
           alert("Too slow!");
         }
 
@@ -302,7 +331,8 @@
 
     function outOfBounds() {
       if (raceStarted) {
-        stopDrawing(); // Optional: maybe reset or disqualify
+        startZone.style.display = 'block';
+        stopDrawing();
         alert("You went out of bounds!");
       }
     }
@@ -313,8 +343,8 @@
       let nextPoint = "check-point-" + nextCheckpointNum
 
       if (raceStarted && (nextPoint == pointHit)) {
-        displayText = "Checkpoint 1 cleared!";
-        document.getElementById('status-text').textContent = displayText;
+        // displayText = "Checkpoint 1 cleared!";
+        // document.getElementById('status-text').textContent = displayText;
         //alert("HIT");
         nextCheckpointNum = nextCheckpointNum + 1;
       }
@@ -403,33 +433,19 @@
     }
 
     startZone.addEventListener('mouseenter', (e) => {
-      endZone.style.display = 'block';
-
-      for (const el of checkPoints) {
-        el.style.display = "block";
-      }
-
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      lastX = x;
-      lastY = y;
-      startDrawing(x, y);
+      beginRaceSequence(x, y);
     });
 
     startZone.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      endZone.style.display = 'block';
-      for (const el of checkPoints) {
-        el.style.display = "block";
-      }
       const rect = canvas.getBoundingClientRect();
       const touch = e.touches[0];
       const x = touch.clientX - rect.left;
       const y = touch.clientY - rect.top;
-      lastX = x;
-      lastY = y;
-      startDrawing(x, y);
+      beginRaceSequence(x, y);
     });
 
     endZone.addEventListener('mouseenter', () => {
