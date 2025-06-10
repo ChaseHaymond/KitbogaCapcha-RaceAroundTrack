@@ -284,6 +284,34 @@
     const bgImage = new Image();
     bgImage.src = 'images/track.png';
 
+    function beginRaceSequence(x, y) {
+      // Hide start zone and show checkpoints
+      startZone.style.display = 'none';
+      endZone.style.display = 'block';
+      for (const el of checkPoints) {
+        el.style.display = "block";
+      }
+
+      // Show "On your marks"
+      displayText = "On your marks";
+      document.getElementById('status-text').textContent = displayText;
+
+      setTimeout(() => {
+        displayText = "Get set";
+        document.getElementById('status-text').textContent = displayText;
+
+        setTimeout(() => {
+          displayText = "GO!";
+          document.getElementById('status-text').textContent = displayText;
+
+          // Now start the race
+          lastX = x;
+          lastY = y;
+          startDrawing(x, y);
+        }, 1000); // After another 1s
+      }, 1000); // First delay
+    }
+
     bgImage.onload = function() {
       ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
     };
@@ -315,8 +343,8 @@
       let nextPoint = "check-point-" + nextCheckpointNum
 
       if (raceStarted && (nextPoint == pointHit)) {
-        displayText = "Checkpoint 1 cleared!";
-        document.getElementById('status-text').textContent = displayText;
+        // displayText = "Checkpoint 1 cleared!";
+        // document.getElementById('status-text').textContent = displayText;
         //alert("HIT");
         nextCheckpointNum = nextCheckpointNum + 1;
       }
@@ -405,35 +433,19 @@
     }
 
     startZone.addEventListener('mouseenter', (e) => {
-      startZone.style.display = 'none';
-      endZone.style.display = 'block';
-
-      for (const el of checkPoints) {
-        el.style.display = "block";
-      }
-
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      lastX = x;
-      lastY = y;
-      startDrawing(x, y);
+      beginRaceSequence(x, y);
     });
 
     startZone.addEventListener('touchstart', (e) => {
       e.preventDefault();
-      endZone.style.display = 'block';
-      startZone.style.display = 'none';
-      for (const el of checkPoints) {
-        el.style.display = "block";
-      }
       const rect = canvas.getBoundingClientRect();
       const touch = e.touches[0];
       const x = touch.clientX - rect.left;
       const y = touch.clientY - rect.top;
-      lastX = x;
-      lastY = y;
-      startDrawing(x, y);
+      beginRaceSequence(x, y);
     });
 
     endZone.addEventListener('mouseenter', () => {
