@@ -276,6 +276,7 @@
 
     let lastCheckpoint = 6;
     let raceStarted = false;
+    let countdownGoing = false;
     let nextCheckpointNum = 1;
 
     let displayText = "Line up at the starting line!"
@@ -296,19 +297,33 @@
       displayText = "On your marks";
       document.getElementById('status-text').textContent = displayText;
 
+      countdownGoing = true;
+
       setTimeout(() => {
-        displayText = "Get set";
-        document.getElementById('status-text').textContent = displayText;
-
-        setTimeout(() => {
-          displayText = "GO!";
+        if (countdownGoing) {
+          displayText = "Get set";
           document.getElementById('status-text').textContent = displayText;
+        } else {
+          stopDrawing();
+        }
+        if (countdownGoing) {
+          setTimeout(() => {
+            if (countdownGoing) {
+              displayText = "GO!";
+              document.getElementById('status-text').textContent = displayText;
 
-          // Now start the race
-          lastX = x;
-          lastY = y;
-          startDrawing(x, y);
-        }, 1000); // After another 1s
+              // Now start the race
+              lastX = x;
+              lastY = y;
+              countdownGoing = false;
+              startDrawing(x, y);
+            } else {
+              stopDrawing();
+            }
+          }, 1000); // After another 1s
+        } else {
+          stopDrawing();
+        }
       }, 1000); // First delay
     }
 
@@ -317,20 +332,24 @@
     };
 
     function captchaSuccess() {
+      if (countdownGoing) {
+        alert("False start!");
+        stopDrawing();
+      }
       if (nextCheckpointNum > lastCheckpoint) {
         if (!isTimeUnderRequiredTime()) {
           startZone.style.display = 'block';
           stopDrawing();
           alert("Too slow!");
+        } else {
+          window.top.postMessage("success", '*');
+          stopDrawing();
         }
-
-        window.top.postMessage("success", '*');
-        stopDrawing();
       }
     }
 
     function outOfBounds() {
-      if (raceStarted) {
+      if (raceStarted || countdownGoing) {
         startZone.style.display = 'block';
         stopDrawing();
         alert("You went out of bounds!");
@@ -369,6 +388,7 @@
       if (raceStarted == false) {
         startTimer();
       }
+      countdownGoing = false;
       raceStarted = true;
       drawing = true;
       // Start a new path from lastX/lastY
@@ -379,6 +399,10 @@
     }
 
     function stopDrawing() {
+      nextCheckpointNum = 1;
+      displayText = "Line up at the starting line!";
+      document.getElementById('status-text').textContent = displayText;
+      startZone.style.display = 'block';
       stopTimer();
       document.getElementById('timer').textContent = '00.000'; // reset to zero if needed
       endZone.style.display = 'none';
@@ -388,6 +412,7 @@
       }
 
       raceStarted = false;
+      countdownGoing = false;
       drawing = false;
 
       // document.getElementById('start-zone').classList.add('flash');
