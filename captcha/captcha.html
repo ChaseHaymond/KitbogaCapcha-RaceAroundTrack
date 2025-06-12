@@ -482,8 +482,20 @@
       });
     });
 
+    checkPoints.forEach(el => {
+      el.addEventListener('touchstart', () => {
+        checkPointHit(el.id);
+      });
+    });
+
     outOfBoundsElements.forEach(el => {
       el.addEventListener('mouseenter', () => {
+        outOfBounds();
+      });
+    });
+
+    outOfBoundsElements.forEach(el => {
+      el.addEventListener('touchstart', () => {
         outOfBounds();
       });
     });
