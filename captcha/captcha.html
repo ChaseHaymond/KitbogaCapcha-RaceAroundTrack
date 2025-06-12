@@ -468,7 +468,7 @@
       // }
 
       const touchedElement = document.elementFromPoint(x, y);
-      if (touchedElement === endRect || endRect.contains(touchedElement)) {
+      if (touchedElement === endZone || endZone.contains(touchedElement)) {
         console.log("Directly touched the end zone.");
         captchaSuccess();
       }
