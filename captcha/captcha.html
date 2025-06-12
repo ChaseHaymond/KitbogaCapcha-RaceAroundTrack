@@ -360,6 +360,9 @@
       // let num = 1;
       let nextPoint = "check-point-" + nextCheckpointNum
 
+      displayText = nextPoint;
+      document.getElementById('status-text').textContent = displayText;
+
       if (raceStarted && (nextPoint == pointHit)) {
         // displayText = "Checkpoint 1 cleared!";
         // document.getElementById('status-text').textContent = displayText;
@@ -420,7 +423,7 @@
     function handleTouchMove(e) {
       e.preventDefault(); // prevent scrolling
 
-      if (!drawing) return;
+      // if (!drawing) return;
       const rect = canvas.getBoundingClientRect();
       const touch = e.touches[0];
       const x = touch.clientX - rect.left;
@@ -433,9 +436,6 @@
 
       lastX = x;
       lastY = y;
-
-      displayText = `x: ${x}, y: ${y}`;
-      document.getElementById('status-text').textContent = displayText;
 
       // Check if inside any check point element
       for (const el of checkPoints) {
