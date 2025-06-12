@@ -437,52 +437,39 @@
       displayText = `x: ${x}, y: ${y}`;
       document.getElementById('status-text').textContent = displayText;
 
+      // Check if inside any check point element
+      for (const el of checkPoints) {
+        const touchedElement = document.elementFromPoint(x, y);
+        if (touchedElement === el || el.contains(touchedElement)) {
+          checkPointHit(el.id);
+          console.log("Directly touched the checkpoint.");
+          return;
+        }
+      }
+
       // Check if inside any out-of-bounds element
-      // for (const el of outOfBoundsElements) {
-      //   const b = el.getBoundingClientRect();
-      //   const withinX = x >= b.left && x <= b.right; //touch.clientX >= b.left && touch.clientX <= b.right;
-      //   const withinY = y >= b.top && y <= b.bottom; //touch.clientY >= b.top && touch.clientY <= b.bottom;
-
-      //   if (withinX && withinY) {
-      //     displayText = el.id
-      //     document.getElementById('status-text').textContent = displayText;
-
-      //     alert(
-      //       `OUT OF BOUNDS!\n` +
-      //       `Element ID: ${el.id}\n\n` +
-      //       `Touch Position:\n` +
-      //       `  x: ${x.toFixed(2)}\n` +
-      //       `  y: ${y.toFixed(2)}\n\n` +
-      //       `  clientX: ${touch.clientX.toFixed(2)}\n\n` +
-      //       `  clientY: ${touch.clientY.toFixed(2)}\n\n` +
-      //       `Element Bounding Box:\n` +
-      //       `  left: ${b.left.toFixed(2)}\n` +
-      //       `  right: ${b.right.toFixed(2)}\n` +
-      //       `  top: ${b.top.toFixed(2)}\n` +
-      //       `  bottom: ${b.bottom.toFixed(2)}\n\n` +
-      //       `Within X Bounds: ${withinX}\n` +
-      //       `Within Y Bounds: ${withinY}`
-      //     );
-
-      //     outOfBounds();
-      //     return;
-      //   }
-      // }
-
       for (const el of outOfBoundsElements) {
         const touchedElement = document.elementFromPoint(x, y);
         if (touchedElement === el || el.contains(touchedElement)) {
           outOfBounds();
+          console.log("Directly touched the out of bounds.");
           return;
         }
       }
 
       // Check if inside end zone
-      const endRect = endZone.getBoundingClientRect();
-      const withinX = x >= endRect.left && x <= endRect.right; //touch.clientX >= endRect.left && touch.clientX <= endRect.right;
-      const withinY = y >= endRect.top && y <= endRect.bottom; //touch.clientY >= endRect.top && touch.clientY <= endRect.bottom;
+      // const endRect = endZone.getBoundingClientRect();
+      // const withinX = x >= endRect.left && x <= endRect.right; //touch.clientX >= endRect.left && touch.clientX <= endRect.right;
+      // const withinY = y >= endRect.top && y <= endRect.bottom; //touch.clientY >= endRect.top && touch.clientY <= endRect.bottom;
 
-      if (withinX && withinY) {
+      // if (withinX && withinY) {
+      //   console.log("Directly touched the end zone.");
+      //   captchaSuccess();
+      // }
+
+      const touchedElement = document.elementFromPoint(x, y);
+      if (touchedElement === endRect || endRect.contains(touchedElement)) {
+        console.log("Directly touched the end zone.");
         captchaSuccess();
       }
     }
@@ -513,20 +500,8 @@
       });
     });
 
-    checkPoints.forEach(el => {
-      el.addEventListener('touchstart', () => {
-        checkPointHit(el.id);
-      });
-    });
-
     outOfBoundsElements.forEach(el => {
       el.addEventListener('mouseenter', () => {
-        outOfBounds();
-      });
-    });
-
-    outOfBoundsElements.forEach(el => {
-      el.addEventListener('touchstart', () => {
         outOfBounds();
       });
     });
