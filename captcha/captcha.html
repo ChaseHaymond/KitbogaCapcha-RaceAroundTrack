@@ -470,58 +470,12 @@
       // }
 
       for (const el of outOfBoundsElements) {
-        const b = el.getBoundingClientRect();
-
-        const isRotatedCorner = el.id.includes('corner');
-        const hit =
-          isRotatedCorner
-            ? isPointInRotatedSquare(touch.clientX, touch.clientY, b, 45)
-            : (touch.clientX >= b.left && touch.clientX <= b.right &&
-              touch.clientY >= b.top && touch.clientY <= b.bottom);
-
-        if (hit) {
-          alert(
-          `OUT OF BOUNDS!\n` +
-          `Element ID: ${el.id}\n\n` +
-          `Touch Position:\n` +
-          `  x: ${x.toFixed(2)}\n` +
-          `  y: ${y.toFixed(2)}\n\n` +
-          `  clientX: ${touch.clientX.toFixed(2)}\n\n` +
-          `  clientY: ${touch.clientY.toFixed(2)}\n\n` +
-          `Element Bounding Box:\n` +
-          `  left: ${b.left.toFixed(2)}\n` +
-          `  right: ${b.right.toFixed(2)}\n` +
-          `  top: ${b.top.toFixed(2)}\n` +
-          `  bottom: ${b.bottom.toFixed(2)}\n\n` +
-          `Within X Bounds: ${withinX}\n` +
-          `Within Y Bounds: ${withinY}`
-          );
-          
+        const touchedElement = document.elementFromPoint(x, y);
+        if (touchedElement === el || el.contains(touchedElement)) {
           outOfBounds();
           return;
         }
       }
-
-
-      function isPointInRotatedSquare(px, py, rect, angleDegrees) {
-        const angle = angleDegrees * (Math.PI / 180);
-        
-        // Center of the square
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-
-        // Translate point to square's coordinate space
-        const dx = px - cx;
-        const dy = py - cy;
-
-        // Rotate point in opposite direction
-        const rx = dx * Math.cos(-angle) - dy * Math.sin(-angle);
-        const ry = dx * Math.sin(-angle) + dy * Math.cos(-angle);
-
-        // Check if point is inside unrotated square
-        return Math.abs(rx) <= rect.width / 2 && Math.abs(ry) <= rect.height / 2;
-      }
-
 
       // Check if inside end zone
       const endRect = endZone.getBoundingClientRect();
