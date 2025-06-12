@@ -90,13 +90,13 @@
     #start-zone {
       top: 73px;
       left: 114px;
-      background: rgba(0, 255, 0, 0.3); /* green */
+      background: rgba(0, 255, 0, 0.3); 
     }
 
     #end-zone {
       top: 73px;
       left: 66px;
-      background: rgba(255, 0, 0, 0.0); /* red */
+      background: rgba(255, 0, 0, 0.0); 
       display: none;
     }
 
@@ -138,9 +138,10 @@
       left: 214px;
     }
 
+    /* Text */
     #header-text {
       position: absolute;
-      top: 2px; /* or try 0 or tweak based on placement */
+      top: 2px; 
       left: 5px;
       width: 100%;
       text-align: left;
@@ -154,7 +155,7 @@
 
     #status-text {
       position: absolute;
-      top: 25px; /* or try 0 or tweak based on placement */
+      top: 25px; 
       left: 10px;
       width: 100%;
       text-align: center;
@@ -177,6 +178,7 @@
       font-family: monospace;
     }
 
+    /* misc style */
     @keyframes flash {
       0% { opacity: 1; }
       30% { opacity: 0.0; }
@@ -286,14 +288,12 @@
     bgImage.src = 'images/track.png';
 
     function beginRaceSequence(x, y) {
-      // Hide start zone and show checkpoints
       startZone.style.display = 'none';
       endZone.style.display = 'block';
       for (const el of checkPoints) {
         el.style.display = "block";
       }
 
-      // Show "On your marks"
       displayText = "On your marks";
       document.getElementById('status-text').textContent = displayText;
 
@@ -312,7 +312,6 @@
               displayText = "GO!";
               document.getElementById('status-text').textContent = displayText;
 
-              // Now start the race
               lastX = x;
               lastY = y;
               countdownGoing = false;
@@ -320,11 +319,11 @@
             } else {
               stopDrawing();
             }
-          }, 1000); // After another 1s
+          }, 1000); 
         } else {
           stopDrawing();
         }
-      }, 1000); // First delay
+      }, 1000); 
     }
 
     bgImage.onload = function() {
@@ -443,7 +442,7 @@
 
         if (withinX && withinY) {
           outOfBounds();
-          return; // Exit early — no further checks needed
+          return;
         }
       }
 
@@ -483,8 +482,20 @@
       });
     });
 
+    checkPoints.forEach(el => {
+      el.addEventListener('touchstart', () => {
+        checkPointHit(el.id);
+      });
+    });
+
     outOfBoundsElements.forEach(el => {
       el.addEventListener('mouseenter', () => {
+        outOfBounds();
+      });
+    });
+
+    outOfBoundsElements.forEach(el => {
+      el.addEventListener('touchstart', () => {
         outOfBounds();
       });
     });
