@@ -96,7 +96,7 @@
     #end-zone {
       top: 73px;
       left: 66px;
-      background: rgba(255, 0, 0, 0.0); 
+      background: rgba(255, 0, 0, 0.7); 
       display: none;
     }
 
@@ -104,7 +104,7 @@
       width: 50px;
       height: 40px;
       position: absolute;
-      background: rgba(255, 166, 0, 0.0);
+      background: rgba(255, 166, 0, 0.7);
        display: block; /* none; */
     }
 
@@ -444,6 +444,26 @@
         const withinY = y >= b.top && y <= b.bottom; //touch.clientY >= b.top && touch.clientY <= b.bottom;
 
         if (withinX && withinY) {
+          displayText = el.id
+          document.getElementById('status-text').textContent = displayText;
+
+          alert(
+            `OUT OF BOUNDS!\n` +
+            `Element ID: ${el.id}\n\n` +
+            `Touch Position:\n` +
+            `  x: ${x.toFixed(2)}\n` +
+            `  y: ${y.toFixed(2)}\n\n` +
+            `  clientX: ${touch.clientX.toFixed(2)}\n\n` +
+            `  clientY: ${touch.clientY.toFixed(2)}\n\n` +
+            `Element Bounding Box:\n` +
+            `  left: ${b.left.toFixed(2)}\n` +
+            `  right: ${b.right.toFixed(2)}\n` +
+            `  top: ${b.top.toFixed(2)}\n` +
+            `  bottom: ${b.bottom.toFixed(2)}\n\n` +
+            `Within X Bounds: ${withinX}\n` +
+            `Within Y Bounds: ${withinY}`
+          );
+
           outOfBounds();
           return;
         }
