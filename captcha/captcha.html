@@ -338,8 +338,10 @@
       if (nextCheckpointNum > lastCheckpoint) {
         if (!isTimeUnderRequiredTime()) {
           startZone.style.display = 'block';
+          alert(`Too slow!
+          Your time was: ${document.getElementById('timer').textContent}s
+          Needed to be under 4.000s`);
           stopDrawing();
-          alert("Too slow!");
         } else {
           window.top.postMessage("success", '*');
           stopDrawing();
